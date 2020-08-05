@@ -3,6 +3,7 @@
 CSR_FOLDER=target/csr
 CONF_FOLDER=target/kubernetes
 PKI_FOLDER=target/kubernetes/pki
+EXTERNAL_CA=pki-mock/ca.crt
 
 # Using as input list of fqdns for kubelet (all masters + workers) generate n csr
 # Create an extesion file with all extensions as they should inclide SAN
@@ -32,9 +33,30 @@ function create_kubelet_client {
 # $1 NODENAME
 # $2 KUBE-APISERVER (DNS / IP):PORT Ex. 10.10.10.10:6443 or k8s.proj.domain:433 
 function create_kubelet_conf {
-  sed "s/NODENAME/$1/g; s/KUBE-APISERVER/$2/g" \
+  CA_BASE64=$(cat $EXTERNAL_CA | base64 -w 0)
+  sed "s/NODENAME/$1/g; s/KUBE-APISERVER/$2/g; s/CA_BASE64/$CA_BASE64/g" \
        templates/k8s/kubelet/kubelet.conf.tpl > $CONF_FOLDER/kubelet-$1.conf
 }
+
+# $1 KUBE-APISERVER-DNS
+# $2 KUBE-APISERVER-IP 
+function create_apiserver_server {
+  # Substitue required information on host veritification
+  sed "s/KUBE-APISERVER-DNS/DNS.5 = $1/g; s/KUBE-APISERVER-IP/IP.2 = $2/g" \
+       templates/k8s/apiserver/x509req-apiserver-server.cnf.tpl \
+       > templates/k8s/apiserver/x509req-apiserver-server-$1.cnf
+
+  # Generate key + csr with ext attributes
+  openssl req -config templates/k8s/apiserver/x509req-apiserver-server-$1.cnf \
+              -new -nodes \
+              -keyout $PKI_FOLDER/apiserver-$1.key \
+              -out $CSR_FOLDER/apiserver-$1.csr
+
+ 
+  # Remove temporary cnf 
+  rm templates/k8s/apiserver/x509req-apiserver-server-$1.cnf
+}
+
 
 
 # Main
@@ -56,3 +78,4 @@ fi
 create_kubelet_server localhost.localdomain
 create_kubelet_client localhost.localdomain
 create_kubelet_conf localhost.localdomain 10.0.2.15:6443
+create_apiserver_server localhost.localdomain 10.0.2.15

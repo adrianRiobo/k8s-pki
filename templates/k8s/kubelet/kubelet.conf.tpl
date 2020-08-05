@@ -1,7 +1,7 @@
 apiVersion: v1
 clusters:
 - cluster:
-    certificate-authority: /etc/kubernetes/pki/ca.crt
+    certificate-authority-data: CA_BASE64
     server: https://KUBE-APISERVER
   name: kubernetes
 contexts:
@@ -15,5 +15,5 @@ preferences: {}
 users:
 - name: system:node:NODENAME
   user:
-    client-certificate: /etc/kubernetes/kubelet-client.crt
+    client-certificate: /etc/kubernetes/pki/kubelet-client.crt
     client-key: /etc/kubernetes/pki/kubelet-client.key

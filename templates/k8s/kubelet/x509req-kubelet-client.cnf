@@ -6,7 +6,7 @@ req_extensions     = kubelet_client
 prompt             = no
 
 [ req_distinguished_name ]
-CN                 = system:nodes:${ENV::NODENAME}
+CN                 = system:node:${ENV::NODENAME}
 O                  = system:nodes
 
 [ req_attributes ]

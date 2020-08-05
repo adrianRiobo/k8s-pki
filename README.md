@@ -36,4 +36,10 @@ to the issuer.
 
 * change ownership: chwon -R root:root . for target / out_crt folders..all files should be owned by root
 
+# Troubleshooting
 
+Test exact phase within kubeadm with log level:
+
+```
+kubeadm init phase upload-config kubelet -v 10
+```
