@@ -76,16 +76,46 @@ function create_etcd_healthcheck_client {
               -out $CSR_ETCD_FOLDER/healthcheck-client.csr
 }
 
-#TODO continue from here
+# $1 ETCD-DNS
+# $2 ETCD-IP (optional)
 function create_etcd_peer {
-  #export SAN="DNS:fqdn, IP:X.X.X.X"
-  export SAN="DNS:$1"
-  openssl req -config templates/k8s/kubelet/x509req-kubelet-server.cnf \
+
+  # Create cnf from tpl with values
+  sed "s/ETCD-DNS/DNS.2 = $1/g; s/ETCD-IP/IP.2 = $2/g" \
+       templates/etcd/x509req-peer.cnf.tpl \
+       > templates/etcd/x509req-peer-$1.cnf
+
+  # Create csr 
+  openssl req -config templates/etcd/x509req-peer-$1.cnf \
               -new -nodes \
-              -keyout $PKI_FOLDER/kubelet-server-$1.key \
-              -out $CSR_FOLDER/kubelet-server-$1.csr \
-              -subj "/CN=kubelet-server-$1"
+              -keyout $ETCD_FOLDER/peer-$1.key \
+              -out $CSR_ETCD_FOLDER/peer-$1.csr \
+              -subj "/CN=$1"
+
+  # Remove temporary files
+  rm templates/etcd/x509req-peer-$1.cnf
 }
+
+# $1 ETCD-DNS
+# $2 ETCD-IP (optional)
+function create_etcd_server {
+
+  # Create cnf from tpl with values
+  sed "s/ETCD-DNS/DNS.2 = $1/g; s/ETCD-IP/IP.2 = $2/g" \
+       templates/etcd/x509req-server.cnf.tpl \
+       > templates/etcd/x509req-server-$1.cnf
+
+  # Create csr
+  openssl req -config templates/etcd/x509req-server-$1.cnf \
+              -new -nodes \
+              -keyout $ETCD_FOLDER/server-$1.key \
+              -out $CSR_ETCD_FOLDER/server-$1.csr \
+              -subj "/CN=$1"
+
+  # Remove temporary files
+  rm templates/etcd/x509req-server-$1.cnf
+}
+
           
 
 # Main
@@ -123,4 +153,5 @@ create_apiserver_server localhost.localdomain 10.0.2.15
 
 # Etcd
 create_etcd_healthcheck_client
-
+create_etcd_peer localhost.localdomain 10.0.2.15
+create_etcd_server localhost.localdomain 10.0.2.15

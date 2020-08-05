@@ -24,6 +24,8 @@ preserve         = no
 policy           = policy_default
 #Extension from csr
 copy_extensions  = copyall
+#Allows duplicated CNs
+unique_subject = no
 
 [ policy_default ]
 organizationName = optional

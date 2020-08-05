@@ -24,6 +24,10 @@ Sign with ca option will require ca configuration, among the configuration there
 in this case extensions included in the csr are copied to the certificate. So no extensions file should be provided
 to the issuer.    
 
+For etcd cluster communication two types of certificates are generated: peer and server. They both have same information, even 
+same CN, this may lead to errors. This should be take into account. In this solution ca conf includes: unique_subject = no which
+allows certificates with equal CN. 
+
 # Flow
 
 ## Kubelet config files

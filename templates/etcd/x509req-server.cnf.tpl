@@ -1,7 +1,7 @@
 [ req ]
 default_bits = 2048
 distinguished_name = req_distinguished_name
-req_extensions     = etcd_peer
+req_extensions     = etcd_server
 
 [ req_distinguished_name ]
 CN                 = FQDN
@@ -12,7 +12,7 @@ ETCD-DNS
 IP.1 = 127.0.0.1
 ETCD-IP
 
-[etcd_peer]
+[etcd_server]
 keyUsage=digitalSignature, keyEncipherment
 extendedKeyUsage=serverAuth, clientAuth
 subjectAltName=@alt_names

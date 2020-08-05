@@ -44,4 +44,5 @@ sign_certificate apiserver-localhost.localdomain
 
 # Etcd
 sign_certificate etcd/healthcheck-client
-
+sign_certificate etcd/peer-localhost.localdomain
+sign_certificate etcd/server-localhost.localdomain
