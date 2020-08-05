@@ -1,0 +1,15 @@
+[ req ]
+default_bits = 2048
+distinguished_name = req_distinguished_name
+req_extensions     = apiserver_etcd_client
+prompt             = no
+
+[ req_distinguished_name ] 
+CN                 = kube-apiserver-etcd-client
+O                  = system:masters
+
+[apiserver_etcd_client]
+keyUsage           = digitalSignature, keyEncipherment
+extendedKeyUsage   = clientAuth
+
+

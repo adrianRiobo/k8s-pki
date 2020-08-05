@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Define folders
 CSR_FOLDER=target/csr
 CSR_ETCD_FOLDER=$CSR_FOLDER/etcd
 CONF_FOLDER=target/kubernetes
@@ -7,116 +8,10 @@ PKI_FOLDER=target/kubernetes/pki
 ETCD_FOLDER=$PKI_FOLDER/etcd
 EXTERNAL_CA=pki-mock/ca.crt
 
-# Using as input list of fqdns for kubelet (all masters + workers) generate n csr
-# Create an extesion file with all extensions as they should inclide SAN
-
-# $1 kubelet node fqdn (dns record)
-# $2 optional IP 
-function create_kubelet_server {
-  #export SAN="DNS:fqdn, IP:X.X.X.X"
-  export SAN="DNS:$1"
-  openssl req -config templates/k8s/kubelet/x509req-kubelet-server.cnf \
-              -new -nodes \
-              -keyout $PKI_FOLDER/kubelet-server-$1.key \
-              -out $CSR_FOLDER/kubelet-server-$1.csr \
-              -subj "/CN=kubelet-server-$1"
-}
-
-# $1 kubelet node name
-function create_kubelet_client {
-  #export SAN="DNS:fqdn, IP:X.X.X.X"
-  export NODENAME=$1
-  openssl req -config templates/k8s/kubelet/x509req-kubelet-client.cnf \
-              -new -nodes \
-              -keyout $PKI_FOLDER/kubelet-client-$1.key \
-              -out $CSR_FOLDER/kubelet-client-$1.csr 
-}
-
-# $1 NODENAME
-# $2 KUBE-APISERVER (DNS / IP):PORT Ex. 10.10.10.10:6443 or k8s.proj.domain:433 
-function create_kubelet_conf {
-  CA_BASE64=$(cat $EXTERNAL_CA | base64 -w 0)
-  sed "s/NODENAME/$1/g; s/KUBE-APISERVER/$2/g; s/CA_BASE64/$CA_BASE64/g" \
-       templates/k8s/kubelet/kubelet.conf.tpl > $CONF_FOLDER/kubelet-$1.conf
-}
-
-# $1 KUBE-APISERVER-DNS
-# $2 KUBE-APISERVER-IP 
-function create_apiserver_server {
-  # Substitue required information on host veritification
-  sed "s/KUBE-APISERVER-DNS/DNS.5 = $1/g; s/KUBE-APISERVER-IP/IP.2 = $2/g" \
-       templates/k8s/apiserver/x509req-apiserver-server.cnf.tpl \
-       > templates/k8s/apiserver/x509req-apiserver-server-$1.cnf
-
-  # Generate key + csr with ext attributes
-  openssl req -config templates/k8s/apiserver/x509req-apiserver-server-$1.cnf \
-              -new -nodes \
-              -keyout $PKI_FOLDER/apiserver-$1.key \
-              -out $CSR_FOLDER/apiserver-$1.csr
-
- 
-  # Remove temporary cnf 
-  rm templates/k8s/apiserver/x509req-apiserver-server-$1.cnf
-}
-
-# $1 kubelet node name
-function create_kubelet_client {
-  #export SAN="DNS:fqdn, IP:X.X.X.X"
-  export NODENAME=$1
-  openssl req -config templates/k8s/kubelet/x509req-kubelet-client.cnf \
-              -new -nodes \
-              -keyout $PKI_FOLDER/kubelet-client-$1.key \
-              -out $CSR_FOLDER/kubelet-client-$1.csr
-}
-
-function create_etcd_healthcheck_client {
-  openssl req -config templates/etcd/x509req-healthcheck-client.cnf \
-              -new -nodes \
-              -keyout $ETCD_FOLDER/healthcheck-client.key \
-              -out $CSR_ETCD_FOLDER/healthcheck-client.csr
-}
-
-# $1 ETCD-DNS
-# $2 ETCD-IP (optional)
-function create_etcd_peer {
-
-  # Create cnf from tpl with values
-  sed "s/ETCD-DNS/DNS.2 = $1/g; s/ETCD-IP/IP.2 = $2/g" \
-       templates/etcd/x509req-peer.cnf.tpl \
-       > templates/etcd/x509req-peer-$1.cnf
-
-  # Create csr 
-  openssl req -config templates/etcd/x509req-peer-$1.cnf \
-              -new -nodes \
-              -keyout $ETCD_FOLDER/peer-$1.key \
-              -out $CSR_ETCD_FOLDER/peer-$1.csr \
-              -subj "/CN=$1"
-
-  # Remove temporary files
-  rm templates/etcd/x509req-peer-$1.cnf
-}
-
-# $1 ETCD-DNS
-# $2 ETCD-IP (optional)
-function create_etcd_server {
-
-  # Create cnf from tpl with values
-  sed "s/ETCD-DNS/DNS.2 = $1/g; s/ETCD-IP/IP.2 = $2/g" \
-       templates/etcd/x509req-server.cnf.tpl \
-       > templates/etcd/x509req-server-$1.cnf
-
-  # Create csr
-  openssl req -config templates/etcd/x509req-server-$1.cnf \
-              -new -nodes \
-              -keyout $ETCD_FOLDER/server-$1.key \
-              -out $CSR_ETCD_FOLDER/server-$1.csr \
-              -subj "/CN=$1"
-
-  # Remove temporary files
-  rm templates/etcd/x509req-server-$1.cnf
-}
-
-          
+# Import functions
+source scripts/functions-kubelet.sh
+source scripts/functions-etcd.sh
+source scripts/functions-apiserver.sh          
 
 # Main
 
