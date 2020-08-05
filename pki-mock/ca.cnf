@@ -1,20 +1,20 @@
-dir = .
+PKI_DIR = "."
 
 [ ca ]
 default_ca = mock_ca
 
 [ mock_ca ]
-certs            = $dir/certs
-certificate      = $dir/certs/ca.crt
-crl              = $dir/crl.pem
-crl_dir          = $dir/crl
-crlnumber        = $dir/crlnumber
-database         = $dir/index.txt
+certs            = ${ENV::PKI_DIR}/certs
+certificate      = ${ENV::PKI_DIR}/certs/ca.crt
+crl              = ${ENV::PKI_DIR}/crl.pem
+crl_dir          = ${ENV::PKI_DIR}/crl
+crlnumber        = ${ENV::PKI_DIR}/crlnumber
+database         = ${ENV::PKI_DIR}/index.txt
 email_in_dn      = no
-new_certs_dir    = $dir/newcerts
-private_key      = $dir/private/ca.key
-serial           = $dir/serial
-RANDFILE         = $dir/private/.rand
+new_certs_dir    = ${ENV::PKI_DIR}/newcerts
+private_key      = ${ENV::PKI_DIR}/private/ca.key
+serial           = ${ENV::PKI_DIR}/serial
+RANDFILE         = ${ENV::PKI_DIR}/private/.rand
 name_opt         = ca_default
 cert_opt         = ca_default
 default_days     = 3650
