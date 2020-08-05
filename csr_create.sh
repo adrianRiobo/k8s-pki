@@ -18,6 +18,17 @@ function create_kubelet_server {
               -subj "/CN=kubelet-server-$1"
 }
 
+# $1 kubelet node name
+function create_kubelet_client {
+  #export SAN="DNS:fqdn, IP:X.X.X.X"
+  export NODENAME=$1
+  openssl req -config templates/k8s/kubelet/x509req-kubelet-client.cnf \
+              -new -nodes \
+              -keyout $KEY_FOLDER/kubelet-client-$1.key \
+              -out $CSR_FOLDER/kubelet-client-$1.csr 
+}
+
+
 # Main
 
 if [ ! -d $CSR_FOLDER ]; then
@@ -31,3 +42,4 @@ fi
 # Kubelet
 # TODO change to for with node list..
 create_kubelet_server localhost.localdomain
+create_kubelet_client localhost.localdomain

@@ -37,3 +37,4 @@ fi
 # Kubelet
 # kubelet server TODO read csrs from folder and loop on them
 sign_certificate kubelet-server-localhost.localdomain
+sign_certificate kubelet-client-localhost.localdomain
