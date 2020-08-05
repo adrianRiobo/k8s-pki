@@ -78,4 +78,5 @@ fi
 create_kubelet_server localhost.localdomain
 create_kubelet_client localhost.localdomain
 create_kubelet_conf localhost.localdomain 10.0.2.15:6443
+# Check if apiserver LB ..this should be updated at kubeadm config file.... find 10.0.2.15 at samples
 create_apiserver_server localhost.localdomain 10.0.2.15
