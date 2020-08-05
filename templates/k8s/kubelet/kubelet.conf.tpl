@@ -1,19 +1,19 @@
 apiVersion: v1
 clusters:
 - cluster:
-    certificate-authority-data: CA_BASE64
-    server: https://KUBE-APISERVER:6443
+    certificate-authority: /etc/kubernetes/pki/ca.crt
+    server: https://KUBE-APISERVER
   name: kubernetes
 contexts:
 - context:
     cluster: kubernetes
-    user: system:node:NODE_NAME
-  name: system:node:NODE_NAME@kubernetes
-current-context: system:node:NODE_NAME@kubernetes
+    user: system:node:NODENAME
+  name: system:node:NODENAME@kubernetes
+current-context: system:node:NODENAME@kubernetes
 kind: Config
 preferences: {}
 users:
-- name: system:node:localhost.localdomain
+- name: system:node:NODENAME
   user:
-    client-certificate-data: KUBELET_CLIENT_CERT_BASE64
-    client-key-data: KUBELET_CLIENT_KEY_BASE64
+    client-certificate: /etc/kubernetes/kubelet-client.crt
+    client-key: /etc/kubernetes/pki/kubelet-client.key

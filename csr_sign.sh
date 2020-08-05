@@ -6,7 +6,7 @@ export PKI_DIR=$PKI_EXTERNAL
 # PKI required resources: ca.key ca.crt ca.cnf (copy extensions)
 PKI_RESOURCES=pki-mock
 CSR_FOLDER=target/csr
-CRT_FOLDER=target/certs
+PKI_FOLDER=target/kubernetes/pki
 
 function create_external_pki {
   mkdir $PKI_EXTERNAL
@@ -21,7 +21,7 @@ function sign_certificate {
   openssl ca -config $PKI_EXTERNAL/ca.cnf \
   -keyfile $PKI_EXTERNAL/ca.key \
   -cert $PKI_EXTERNAL/ca.crt \
-  -out $CRT_FOLDER/$1.crt -infiles $CSR_FOLDER/$1.csr
+  -out $PKI_FOLDER/$1.crt -infiles $CSR_FOLDER/$1.csr
 }
 
 # Main
@@ -29,8 +29,8 @@ if [ ! -d $PKI_EXTERNAL ]; then
   create_external_pki
 fi
 
-if [ ! -d $CRT_FOLDER ]; then
-  mkdir -p $CRT_FOLDER
+if [ ! -d $PKI_FOLDER ]; then
+  mkdir -p $PKI_FOLDER
 fi
 
 

@@ -1,7 +1,8 @@
 #!/bin/bash
 
-CSR_FOLDER=target/csr
-CRT_FOLDER=target/certs
+CURRENT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+CSR_FOLDER=$CURRENT/../target/csr
+PKI_FOLDER=$CURRENT/../target/kubernetes/pki
 
 # $1 csr file path
 function verify_csr() {
@@ -17,6 +18,6 @@ function verify_crt() {
 
 verify_csr $CSR_FOLDER/$1.csr
 
-verify_crt $CRT_FOLDER/$1.crt
+verify_crt $PKI_FOLDER/$1.crt
 
 
