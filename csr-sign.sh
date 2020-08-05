@@ -39,5 +39,9 @@ fi
 sign_certificate kubelet-server-localhost.localdomain
 sign_certificate kubelet-client-localhost.localdomain
 
-# apiserver
+# Apiserver
 sign_certificate apiserver-localhost.localdomain
+
+# Etcd
+sign_certificate etcd/healthcheck-client
+

@@ -1,0 +1,18 @@
+[ req ]
+default_bits = 2048
+distinguished_name = req_distinguished_name
+attributes         = req_attributes
+req_extensions     = etcd_healthcheck_client
+prompt             = no
+
+[ req_distinguished_name ]
+O                  = system:masters
+CN                 = kube-etcd-healthcheck-client
+
+[ req_attributes ]
+
+[etcd_healthcheck_client]
+keyUsage           = digitalSignature, keyEncipherment
+extendedKeyUsage   = clientAuth
+
+

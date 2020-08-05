@@ -1,8 +1,10 @@
 #!/bin/bash
 
 CSR_FOLDER=target/csr
+CSR_ETCD_FOLDER=$CSR_FOLDER/etcd
 CONF_FOLDER=target/kubernetes
 PKI_FOLDER=target/kubernetes/pki
+ETCD_FOLDER=$PKI_FOLDER/etcd
 EXTERNAL_CA=pki-mock/ca.crt
 
 # Using as input list of fqdns for kubelet (all masters + workers) generate n csr
@@ -57,26 +59,68 @@ function create_apiserver_server {
   rm templates/k8s/apiserver/x509req-apiserver-server-$1.cnf
 }
 
+# $1 kubelet node name
+function create_kubelet_client {
+  #export SAN="DNS:fqdn, IP:X.X.X.X"
+  export NODENAME=$1
+  openssl req -config templates/k8s/kubelet/x509req-kubelet-client.cnf \
+              -new -nodes \
+              -keyout $PKI_FOLDER/kubelet-client-$1.key \
+              -out $CSR_FOLDER/kubelet-client-$1.csr
+}
 
+function create_etcd_healthcheck_client {
+  openssl req -config templates/etcd/x509req-healthcheck-client.cnf \
+              -new -nodes \
+              -keyout $ETCD_FOLDER/healthcheck-client.key \
+              -out $CSR_ETCD_FOLDER/healthcheck-client.csr
+}
+
+#TODO continue from here
+function create_etcd_peer {
+  #export SAN="DNS:fqdn, IP:X.X.X.X"
+  export SAN="DNS:$1"
+  openssl req -config templates/k8s/kubelet/x509req-kubelet-server.cnf \
+              -new -nodes \
+              -keyout $PKI_FOLDER/kubelet-server-$1.key \
+              -out $CSR_FOLDER/kubelet-server-$1.csr \
+              -subj "/CN=kubelet-server-$1"
+}
+          
 
 # Main
 
-if [ ! -d $CSR_FOLDER ]; then
-  mkdir -p $CSR_FOLDER
+if [ ! -d $CSR_FOLDER ]; then 
+  mkdir -p $CSR_FOLDER 
 fi
 
-if [ ! -d $CONF_FOLDER ]; then
-  mkdir -p $CONF_FOLDER
+if [ ! -d $CONF_FOLDER ]; then 
+  mkdir -p $CONF_FOLDER 
 fi
 
-if [ ! -d $PKI_FOLDER ]; then
-  mkdir -p $PKI_FOLDER
+if [ ! -d $PKI_FOLDER ]; then 
+  mkdir -p $PKI_FOLDER 
 fi
+
+if [ ! -d $CSR_ETCD_FOLDER ]; then 
+  mkdir -p $CSR_ETCD_FOLDER 
+fi
+
+if [ ! -d $ETCD_FOLDER ]; then
+  mkdir -p $ETCD_FOLDER
+fi
+
 
 # Kubelet
 # TODO change to for with node list..
 create_kubelet_server localhost.localdomain
 create_kubelet_client localhost.localdomain
 create_kubelet_conf localhost.localdomain 10.0.2.15:6443
+
+# Apiserver
 # Check if apiserver LB ..this should be updated at kubeadm config file.... find 10.0.2.15 at samples
 create_apiserver_server localhost.localdomain 10.0.2.15
+
+# Etcd
+create_etcd_healthcheck_client
+
