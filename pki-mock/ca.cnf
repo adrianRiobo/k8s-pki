@@ -1,0 +1,31 @@
+dir = .
+
+[ ca ]
+default_ca = mock_ca
+
+[ mock_ca ]
+certs            = $dir/certs
+certificate      = $dir/certs/ca.crt
+crl              = $dir/crl.pem
+crl_dir          = $dir/crl
+crlnumber        = $dir/crlnumber
+database         = $dir/index.txt
+email_in_dn      = no
+new_certs_dir    = $dir/newcerts
+private_key      = $dir/private/ca.key
+serial           = $dir/serial
+RANDFILE         = $dir/private/.rand
+name_opt         = ca_default
+cert_opt         = ca_default
+default_days     = 3650
+default_crl_days = 30
+default_md       = sha512
+preserve         = no
+policy           = policy_default
+#Extension from csr
+copy_extensions  = copyall
+
+[ policy_default ]
+organizationName = optional
+commonName       = supplied
+

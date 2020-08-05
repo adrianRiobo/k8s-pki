@@ -1,0 +1,23 @@
+SAN = "DNS:localhost.localdomain"
+
+[ req ]
+default_bits = 2048
+distinguished_name = req_distinguished_name
+attributes         = req_attributes
+#x509_extensions    = kubelet_server
+req_extensions     = kubelet_server
+
+[ req_distinguished_name ]
+CN                 = FQDN
+
+[ req_attributes ]
+
+[kubelet_server]
+#authorityKeyIdentifier=keyid,issuer:always
+#subjectKeyIdentifier   = hash
+basicConstraints=CA:FALSE
+keyUsage=digitalSignature, keyEncipherment
+extendedKeyUsage=serverAuth
+subjectAltName=${ENV::SAN}
+
+
