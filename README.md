@@ -33,13 +33,13 @@ allows certificates with equal CN.
 First create all required csrs (at this point only for one server...functions should be used to integrate with inventories)  
 
 ```
-./csr-create.sh: This tool will create target/csr folder with all the required csrs  
+./csr-create.sh  
 ```
 
-In case of mocked system sign the images based on mock-pki   
+In case of mocked system sign the images based on mock-pki, otherwise get your crts from your Issuer and put them on target folder     
 
 ```
-./csr-sign.sh: This tool will sign all csrs within the mocked CA
+./csr-sign.sh
 ```
 
 Create specific k8s conf resources based on certificates  
