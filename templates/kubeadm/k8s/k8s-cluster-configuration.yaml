@@ -1,4 +1,5 @@
 apiVersion: kubeadm.k8s.io/v1beta2
+kind: InitConfiguration
 bootstrapTokens:
 - groups:
   - system:bootstrappers:kubeadm:default-node-token
@@ -7,7 +8,6 @@ bootstrapTokens:
   usages:
   - signing
   - authentication
-kind: InitConfiguration
 localAPIEndpoint:
   advertiseAddress: 10.0.2.15
   bindPort: 6443
@@ -18,24 +18,34 @@ nodeRegistration:
   - effect: NoSchedule
     key: node-role.kubernetes.io/master
 ---
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: ClusterConfiguration
+kubernetesVersion: v1.18.0
+clusterName: kubernetes
+imageRepository: k8s.gcr.io
+certificatesDir: /etc/kubernetes/pki
+networking:
+  dnsDomain: cluster.local
+  serviceSubnet: 10.96.0.0/12
 apiServer:
   timeoutForControlPlane: 4m0s
-apiVersion: kubeadm.k8s.io/v1beta2
-certificatesDir: /etc/kubernetes/pki
-clusterName: kubernetes
-controllerManager: {}
+  extraArgs:
+    authorization-mode: "Node,RBAC"
+    # Disable API aggregator
+    proxy-client-cert-file: ""
+    proxy-client-key-file: ""
+    requestheader-allowed-names: ""
+    requestheader-client-ca-file: ""
+controllerManager: 
+  extraArgs:
+    # Disable API aggregator
+    requestheader-client-ca-file: ""
+scheduler: {}
 dns:
   type: CoreDNS
 etcd:
   local:
     dataDir: /var/lib/etcd
-imageRepository: k8s.gcr.io
-kind: ClusterConfiguration
-kubernetesVersion: v1.18.0
-networking:
-  dnsDomain: cluster.local
-  serviceSubnet: 10.96.0.0/12
-scheduler: {}
 ---
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration

@@ -57,7 +57,8 @@ Move all required certificates and files to default location: /etc/kubernetes
 Run kubeadm with specific config (kubelet certs pointint to the generated ones)
 
 ```
-sudo kubeadm --config templates/kubeadm/k8s/k8s-cluster-configuration.yaml  
+sudo kubeadm init --skip-phases=certs/front-proxy-ca,certs/front-proxy-client \
+                  --config templates/kubeadm/k8s/k8s-cluster-configuration.yaml  
 ```
 
 Enjoy your mocked corporate PKI integration :smirk:  

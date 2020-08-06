@@ -25,10 +25,31 @@ TLSCertFile: /etc/kubernetes/pki/kubelet.crt
 TLSPrivateKeyFile: /etc/kubernetes/pki/kubelet.key
 ```
 
-## Execute installation
+## Cluster configuration
 
-Certs structure should be copied to /etc/kubernetes/pki (default path could be customized at config file)  
+The cluster extensibility model will be achieved within CRD, so [aggregate APIs](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation) will be disable to do this, cluster custom configuration left blank proxy client attributes on both apiserver and controller-manager:
 
-kubeadm init --config k8s-cluster-configuration.yaml 
+```
+apiServer:
+  timeoutForControlPlane: 4m0s
+  extraArgs:
+    authorization-mode: "Node,RBAC"
+    # Disable API aggregator
+    proxy-client-cert-file: ""
+    proxy-client-key-file: ""
+    requestheader-allowed-names: ""
+    requestheader-client-ca-file: ""
+controllerManager:
+  extraArgs:
+    # Disable API aggregator
+    requestheader-client-ca-file: ""
+```
+
+Also kubeadm should skip the front-proxy certificates generation, add:
+
+```
+--skip-phases=certs/front-proxy-ca,certs/front-proxy-client
+``` 
+
 
 
