@@ -32,23 +32,33 @@ allows certificates with equal CN.
 
 First create all required csrs (at this point only for one server...functions should be used to integrate with inventories)  
 
+```
 ./csr-create.sh: This tool will create target/csr folder with all the required csrs  
+```
 
 In case of mocked system sign the images based on mock-pki   
 
+```
 ./csr-sign.sh: This tool will sign all csrs within the mocked CA
+```
 
 Create specific k8s conf resources based on certificates  
 
+```
 ./k8s-prepare.sh  
+```
 
 Move all required certificates and files to default location: /etc/kubernetes
 
-./scripts/setup-target.sh  
+```
+./scripts/setup-target.sh
+```  
 
 Run kubeadm with specific config (kubelet certs pointint to the generated ones)
 
+```
 sudo kubeadm --config templates/kubeadm/k8s/k8s-cluster-configuration.yaml  
+```
 
 Enjoy your mocked corporate PKI integration :smirk:  
 
