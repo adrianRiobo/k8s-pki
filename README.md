@@ -28,13 +28,30 @@ For etcd cluster communication two types of certificates are generated: peer and
 same CN, this may lead to errors. This should be take into account. In this solution ca conf includes: unique_subject = no which
 allows certificates with equal CN. 
 
-# Flow
+# Execution
 
-## Kubelet config files
+First create all required csrs (at this point only for one server...functions should be used to integrate with inventories)  
 
-* kubelet.conf: one per node should include node naming information.
-* kubelet-client cert: shared added as base64 on kubelet.conf
-* kubelet cert: one per node should include fqdn
+./csr-create.sh: This tool will create target/csr folder with all the required csrs  
+
+In case of mocked system sign the images based on mock-pki   
+
+./csr-sign.sh: This tool will sign all csrs within the mocked CA
+
+Create specific k8s conf resources based on certificates  
+
+./k8s-prepare.sh  
+
+Move all required certificates and files to default location: /etc/kubernetes
+
+./scripts/setup-target.sh  
+
+Run kubeadm with specific config (kubelet certs pointint to the generated ones)
+
+sudo kubeadm --config templates/kubeadm/k8s/k8s-cluster-configuration.yaml  
+
+Enjoy your mocked corporate PKI integration :smirk:  
+
 
 # TODOs
 
