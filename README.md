@@ -40,6 +40,8 @@ allows certificates with equal CN.
 
 * change ownership: chwon -R root:root . for target / out_crt folders..all files should be owned by root
 
+* In case of external OIDC provider does the initial configuration includes an admin within the admin.conf
+
 # Troubleshooting
 
 Test exact phase within kubeadm with log level:

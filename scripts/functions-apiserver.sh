@@ -19,3 +19,18 @@ function create_apiserver_server {
   rm templates/k8s/apiserver/x509req-apiserver-server-$1.cnf
 }
 
+function create_apiserver_etcd_client {
+  openssl req -config templates/k8s/apiserver/x509req-apiserver-etcd-client.cnf \
+              -new -nodes \
+              -keyout $PKI_FOLDER/apiserver-etcd-client.key \
+              -out $CSR_FOLDER/apiserver-etcd-client.csr
+}
+
+function create_apiserver_kubelet_client {
+  openssl req -config templates/k8s/apiserver/x509req-apiserver-kubelet-client.cnf \
+              -new -nodes \
+              -keyout $PKI_FOLDER/apiserver-kubelet-client.key \
+              -out $CSR_FOLDER/apiserver-kubelet-client.csr
+}
+
+

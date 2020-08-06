@@ -41,8 +41,15 @@ sign_certificate kubelet-client-localhost.localdomain
 
 # Apiserver
 sign_certificate apiserver-localhost.localdomain
+sign_certificate apiserver-etcd-client
+sign_certificate apiserver-kubelet-client
 
 # Etcd
 sign_certificate etcd/healthcheck-client
 sign_certificate etcd/peer-localhost.localdomain
 sign_certificate etcd/server-localhost.localdomain
+
+# Config files 
+sign_certificate admin
+sign_certificate controller-manager
+sign_certificate scheduler

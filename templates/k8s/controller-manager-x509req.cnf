@@ -1,0 +1,14 @@
+[ req ]
+default_bits = 2048
+distinguished_name = req_distinguished_name
+req_extensions     = controller-manager_client
+prompt             = no
+
+[ req_distinguished_name ]
+CN                 = system:kube-controller-manager 
+
+[controller-manager_client]
+keyUsage           = digitalSignature, keyEncipherment
+extendedKeyUsage   = clientAuth
+
+
